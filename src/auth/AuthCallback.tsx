@@ -6,44 +6,36 @@ export function AuthCallback() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const handleCallback = async () => {
-      // Try PKCE flow (code in query params)
-      const params = new URLSearchParams(window.location.search);
-      const code = params.get("code");
-
-      if (code) {
-        await supabase.auth.exchangeCodeForSession(code);
-        navigate("/", { replace: true });
-        return;
-      }
-
-      // Try implicit flow (tokens in hash fragment)
-      // Supabase client auto-detects hash tokens via onAuthStateChange,
-      // so just wait briefly for session to be picked up
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        navigate("/", { replace: true });
-        return;
-      }
-
-      // If neither, wait for onAuthStateChange to fire
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(
-        (event, session) => {
-          if (event === "SIGNED_IN" && session) {
-            subscription.unsubscribe();
-            navigate("/", { replace: true });
-          }
+    // With detectSessionInUrl + PKCE, supabase-js automatically
+    // exchanges the code when it sees ?code= in the URL.
+    // We just need to wait for the session to be established.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session) {
+          subscription.unsubscribe();
+          navigate("/", { replace: true });
         }
-      );
+      }
+    );
 
-      // Timeout fallback — redirect after 5s regardless
-      setTimeout(() => {
+    // Also check if session is already available (e.g. fast exchange)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
         subscription.unsubscribe();
         navigate("/", { replace: true });
-      }, 5000);
-    };
+      }
+    });
 
-    handleCallback();
+    // Timeout fallback
+    const timer = setTimeout(() => {
+      subscription.unsubscribe();
+      navigate("/", { replace: true });
+    }, 5000);
+
+    return () => {
+      clearTimeout(timer);
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   return (
