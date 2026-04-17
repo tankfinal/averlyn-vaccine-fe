@@ -185,6 +185,14 @@ npm run build
 { "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }
 ```
 
+## OpenSpec
+
+This project's full-stack design spec (database schema, API endpoints, auth flow, component tree, acceptance criteria) is maintained as a shared OpenSpec in the backend repo:
+
+- [docs/openspec.md](https://github.com/tankfinal/averlyn-vaccine-be/blob/main/docs/openspec.md)
+
+Frontend-specific sections: §4.3 (React Frontend), §4.3.5 (Auth Flow), §6.2 (Routes), §6.4-6.5 (CSS/Logic Migration).
+
 ## Related
 
 - Backend: [averlyn-vaccine-be](https://github.com/tankfinal/averlyn-vaccine-be)
