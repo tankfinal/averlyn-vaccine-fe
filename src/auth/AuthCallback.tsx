@@ -10,7 +10,7 @@ export function AuthCallback() {
     // exchanges the code when it sees ?code= in the URL.
     // We just need to wait for the session to be established.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      (_event, session) => {
         if (session) {
           subscription.unsubscribe();
           navigate("/", { replace: true });
