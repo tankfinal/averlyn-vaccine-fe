@@ -37,28 +37,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     });
 
-    const init = async () => {
-      // If redirected back with ?code=, exchange it for a session (PKCE flow)
-      const params = new URLSearchParams(window.location.search);
-      const code = params.get("code");
-
-      if (code) {
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
-        if (error) {
-          console.error("Code exchange failed:", error.message);
-        }
-        // Clean up URL
-        window.history.replaceState({}, "", window.location.pathname);
-        return;
-      }
-
-      // No code in URL — check for existing session
-      const { data: { session } } = await supabase.auth.getSession();
+    // Implicit flow: detectSessionInUrl handles hash fragments automatically.
+    // onAuthStateChange above will fire when the session is picked up.
+    // Just check for an existing session on mount.
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setIsLoading(false);
-    };
-
-    init();
+    });
 
     return () => {
       subscription.unsubscribe();
