@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Listen for auth state changes (including auto-detected tokens in URL)
+    // Listen for auth state changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -37,11 +37,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     });
 
-    // Check existing session on mount
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const init = async () => {
+      // If redirected back with ?code=, exchange it for a session (PKCE flow)
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
+
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (error) {
+          console.error("Code exchange failed:", error.message);
+        }
+        // Clean up URL
+        window.history.replaceState({}, "", window.location.pathname);
+        return;
+      }
+
+      // No code in URL — check for existing session
+      const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
       setIsLoading(false);
-    });
+    };
+
+    init();
 
     return () => {
       subscription.unsubscribe();
