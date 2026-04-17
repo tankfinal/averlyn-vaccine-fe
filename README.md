@@ -1,9 +1,34 @@
 # Averlyn Vaccine Tracker — Frontend
 
-Baby vaccine tracking app for Averlyn (born 2025-12-03), built with React + TypeScript.
-Tracks Taiwan's public and self-paid vaccine schedules, with login restricted to family members only.
+A private baby vaccine tracking web app for our daughter **Averlyn** (born 2025-12-03).
+
+Tracks Taiwan's public (公費) and self-paid (自費) vaccine schedules. Family members can log in with Google to view the timeline, mark vaccines as done, and record vaccination dates.
 
 > Live: [averlyn-vaccine-fe.vercel.app](https://averlyn-vaccine-fe.vercel.app)
+
+## About
+
+This project was born from a simple need: keeping track of Averlyn's vaccination schedule following Taiwan's recommended timeline. What started as a static HTML page on GitHub Pages evolved into a full-stack application when we wanted to:
+
+1. **Record actual vaccination dates** — mark vaccines as done and input the date
+2. **Share securely with family** — only two Google accounts can access (wife + me)
+3. **Edit from any device** — mobile-friendly, data persisted in the cloud
+
+### Features
+
+- View all 36 vaccines in a timeline grouped by scheduled date
+- Filter by: all / done / upcoming / overdue
+- Stats bar showing completion progress and next vaccine countdown
+- Mark vaccines as done/undo with date picker
+- "Last updated" timestamp on edited records
+- Google OAuth login restricted to whitelisted emails only
+- Pink/cream theme with Quicksand font
+
+### How It Was Built
+
+This project was developed using **SDD (Spec-Driven Development)** with an [OpenSpec](https://github.com/tankfinal/averlyn-vaccine-be/blob/main/docs/openspec.md) document that defined the full system design before any code was written. The spec covers database schema, API endpoints, component tree, auth flow, and acceptance criteria.
+
+The original static site data (36 vaccine records with actual vaccination dates and notes) was migrated to Supabase PostgreSQL via a one-time migration script.
 
 ## Architecture
 
